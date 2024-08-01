@@ -14,23 +14,23 @@ on:
 
 jobs:
   pod-spell-check:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'do-not-spell-check') }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'do-not-spellcheck') }}
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: filter
         with:
           base: ${{ github.ref }}
           list-files: shell
           filters: |
             plugins:
-              - added|modified: src/**
+              - added|modified: 'src/**/*.pm'
 
       - name: Install CPAN Libraries
-        uses: shogo82148/actions-setup-perl@ea0507898383e7dbce382138da0c21af1849eb9e # v1.27.0
+        uses: shogo82148/actions-setup-perl@f551dafcc94572adc179bbddbb409b3ada8f8ff5 # v1.30.0
         with:
           perl-version: '5.34'
           install-modules-with: cpm

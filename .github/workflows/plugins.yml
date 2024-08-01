@@ -33,11 +33,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: '3.9'
 
-      - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # v2.11.1
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: filter
         with:
           base: ${{ github.ref }}
@@ -76,10 +76,10 @@ jobs:
           PLUGINS="$(python3 .github/scripts/process-plugins.py '${{ steps.filter.outputs.common == 'true' }}')"
 
           echo "plugins=$(echo $PLUGINS)" >> $GITHUB_OUTPUT
-
           if [ "$PLUGINS" == '' ]; then
             echo "::notice::There are no modifications to the plugins packages"
           fi
+
         shell: bash
 
   fatpacker:
@@ -93,7 +93,7 @@ jobs:
           fetch-depth: 1
 
       - name: Prepare FatPacker
-        uses: shogo82148/actions-setup-perl@ea0507898383e7dbce382138da0c21af1849eb9e # v1.27.0
+        uses: shogo82148/actions-setup-perl@f551dafcc94572adc179bbddbb409b3ada8f8ff5 # v1.30.0
         with:
           perl-version: '5.34'
           install-modules-with: cpm
@@ -104,7 +104,7 @@ jobs:
           COMMIT=$(git log -1 HEAD --pretty=format:%h)
           perl .github/scripts/plugins-source.container.pl "${{ needs.get-plugins.outputs.plugins }}" "${{ needs.get-environment.outputs.version }} ($COMMIT)"
 
-      - uses: actions/cache/save@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+      - uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ./build/
           key: fatpacked-plugins-${{ github.sha }}-${{ github.run_id }}
@@ -118,7 +118,7 @@ jobs:
       matrix:
         include:
           - package_extension: rpm
-            image: packaging-plugins-centos7
+            image: packaging-plugins-alma8
             distrib: el7
           - package_extension: rpm
             image: packaging-plugins-alma8
@@ -155,14 +155,15 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - if: ${{ matrix.distrib == 'el7' }}
-        uses: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        # el7 is not compatible with checkout v4 which uses node20
+        uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ./build/
           key: fatpacked-plugins-${{ github.sha }}-${{ github.run_id }}
           fail-on-cache-miss: true
 
       - if: ${{ matrix.distrib != 'el7' }}
-        uses: actions/cache/restore@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ./build/
           key: fatpacked-plugins-${{ github.sha }}-${{ github.run_id }}
@@ -242,8 +243,55 @@ jobs:
           rpm_gpg_signing_passphrase: ${{ secrets.RPM_GPG_SIGNING_PASSPHRASE }}
           stability: ${{ needs.get-environment.outputs.stability }}
 
+  test-plugins:
+    needs: [get-environment, get-plugins, package]
+    strategy:
+      fail-fast: false
+      matrix:
+        distrib: [el8, el9, jammy, bullseye, bookworm]
+        include:
+          - package_extension: rpm
+            image: testing-plugins-alma8
+            distrib: el8
+          - package_extension: rpm
+            image: testing-plugins-alma9
+            distrib: el9
+          - package_extension: deb
+            image: testing-plugins-bullseye
+            distrib: bullseye
+          - package_extension: deb
+            image: testing-plugins-bookworm
+            distrib: bookworm
+          - package_extension: deb
+            image: testing-plugins-jammy
+            distrib: jammy
+
+    runs-on: ubuntu-22.04
+    container:
+      image: ${{ vars.DOCKER_INTERNAL_REGISTRY_URL }}/${{ matrix.image }}
+      credentials:
+        username: ${{ secrets.DOCKER_REGISTRY_ID }}
+        password: ${{ secrets.DOCKER_REGISTRY_PASSWD }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: ./.github/actions/test-plugins
+        with:
+          cache-key: ${{ github.sha }}-${{ github.run_id }}-${{ matrix.package_extension }}-${{ matrix.distrib }}
+          package-extension: ${{ matrix.package_extension }}
+          plugin-list: ${{ needs.get-plugins.outputs.plugins }}
+
+      - name: Upload apt/dnf logs as artifacts if tests failed
+        if: failure()
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: plugin-installation-${{ matrix.distrib }}
+          path: /var/log/robot-plugins-installation-tests.log
+          retention-days: 1
+
   deliver:
-    needs: [get-environment, package]
+    needs: [get-environment, package, test-plugins]
     if: ${{ contains(fromJson('["stable", "testing", "unstable"]'), needs.get-environment.outputs.stability) }}
     uses: ./.github/workflows/plugin-delivery.yml
     with:
