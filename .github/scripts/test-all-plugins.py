@@ -11,8 +11,8 @@ def get_tests_folders(plugin_name):
     pkg_file = open("./packaging/" + plugin_name + "/pkg.json")
     packaging = json.load(pkg_file)
     for file in packaging["files"]: # loop on "files" array in pkg.json file.
-        if file.endswith("/") and os.path.exists("tests/robot/" + file): # if this is a directory and there is test for it.
-            folder_list.append("tests/robot/" + file)
+        if os.path.isdir("tests/" + file): # check if the path is a directory in the "tests" folder
+            folder_list.append("tests/" + file)
     return folder_list
 
 
@@ -49,7 +49,7 @@ def launch_snmp_sim():
     try_command(cmd="mkdir -p /var/lib/snmp/cert_indexes/", error="can't create /var/lib/snmp/cert_indexes/ dir")
     try_command(cmd="chown snmp:snmp -R /var/lib/snmp/cert_indexes/", error="can't set cert_indexes folder permissions")
 
-    snmpsim_cmd = "snmpsim-command-responder --logging-method=null --agent-udpv4-endpoint=127.0.0.1:2024 --process-user=snmp --process-group=snmp --data-dir='./tests/robot' &"
+    snmpsim_cmd = "snmpsim-command-responder --logging-method=null --agent-udpv4-endpoint=127.0.0.1:2024 --process-user=snmp --process-group=snmp --data-dir='./tests' &"
     try_command(cmd=snmpsim_cmd, error="can't launch snmp sim daemon.")
 
 def refresh_packet_manager(archi):
@@ -74,8 +74,8 @@ def install_plugin(plugin, archi):
                     "apt-get install -o 'Binary::apt::APT::Keep-Downloaded-Packages=1;' -y ./" + plugin.lower() + "*.deb",
                 shell=True, check=False, stderr=subprocess.STDOUT, stdout=outfile)).returncode
         elif archi == "rpm":
-            outfile.write("dnf install -y ./" + plugin + "*.rpm\n")
-            output_status = (subprocess.run("dnf install -y ./" + plugin + "*.rpm", shell=True, check=False,
+            outfile.write("dnf install --setopt=keepcache=True -y ./" + plugin + "*.rpm\n")
+            output_status = (subprocess.run("dnf install --setopt=keepcache=True -y ./" + plugin + "*.rpm", shell=True, check=False,
                                         stderr=subprocess.STDOUT, stdout=outfile)).returncode
         else:
             print(f"Unknown architecture, expected deb or rpm, got {archi}. Exiting.")
@@ -95,14 +95,14 @@ def remove_plugin(plugin, archi):
             # 'autoremove', contrary to 'remove' all dependancy while removing the original package.
 
         elif archi == "rpm":
-            outfile.write("dnf remove -y " + plugin + "\n")
-            output_status = (subprocess.run("dnf remove -y " + plugin, shell=True, check=False,
+            outfile.write("dnf remove --setopt=keepcache=True -y " + plugin + "\n")
+            output_status = (subprocess.run("dnf remove --setopt=keepcache=True -y " + plugin, shell=True, check=False,
                                             stderr=subprocess.STDOUT, stdout=outfile)).returncode
         else:
             print(f"Unknown architecture, expected deb or rpm, got {archi}. Exiting.")
             exit(1)
     # Remove cache files
-    tmp_files = glob.glob('/tmp/cache/*')
+    tmp_files = glob.glob('/dev/shm/*')
     for file in tmp_files:
         try:
             os.remove(file)
@@ -121,9 +121,6 @@ if __name__ == '__main__':
     launch_snmp_sim()
     archi = sys.argv.pop(1)  # expected either deb or rpm.
     script_name = sys.argv.pop(0)
-
-    # Create a directory for cache files
-    os.mkdir("/tmp/cache")
 
     error_install = 0
     error_tests = 0
