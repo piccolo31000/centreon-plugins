@@ -4,6 +4,7 @@ Documentation       Check Windows operating systems in SNMP.
 Resource            ${CURDIR}${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -18,7 +19,7 @@ ${CMD}      ${CENTREON_PLUGINS}
 *** Test Cases ***
 Windows Services EN ${tc}
     [Documentation]    Full ASCII
-    [Tags]    os    Windows    local
+    [Tags]    os    windows    local
     ${command}    Catenate
     ...    ${CMD}
     ...    --snmp-community=os/windows/snmp/services-en

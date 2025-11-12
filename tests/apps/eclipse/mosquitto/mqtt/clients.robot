@@ -3,6 +3,8 @@ Documentation       Eclipse Mosquitto MQTT plugin clients mode
 
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -32,7 +34,7 @@ Mosquitto MQTT clients help
     ...    ${CMD}
     ...    --help
 
-    Ctn Run Command And Check Result As Regexp    ${command}    ^Plugin Description:
+    Ctn Run Command Without Connector And Check Result As Regexp    ${command}    ^Plugin Description:
 
 Mosquitto MQTT clients ${tc}
     [Documentation]    Check Mosquitto MQTT clients

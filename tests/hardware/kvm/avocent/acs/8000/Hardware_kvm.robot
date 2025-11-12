@@ -1,7 +1,10 @@
 *** Settings ***
 Documentation       hardware mode
+
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -19,6 +22,7 @@ Hardware
     ...    ${output}
     ...    OK: All 2 components are ok [2/2 psus]. | 'hardware.psu.count'=2;;;;
     ...    Wrong output result for command:{\n}${output}{\n}{\n}{\n}
+
 
 *** Keywords ***
 Run Avocent 8000 Plugin

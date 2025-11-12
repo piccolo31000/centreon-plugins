@@ -53,6 +53,8 @@ overrides:
       perl(FindBin),
       perl(lib),
       perl(sort),
+      perl(String::ShellQuote),
+      tzdata,
       @RPM_DEPENDENCIES@
     ]
     conflicts:
@@ -80,6 +82,8 @@ overrides:
       libkeepass-reader-perl,
       libdatetime-perl,
       libxml-libxml-perl,
+      libstring-shellquote-perl,
+      tzdata,
       @DEB_DEPENDENCIES@
     ]
     conflicts:

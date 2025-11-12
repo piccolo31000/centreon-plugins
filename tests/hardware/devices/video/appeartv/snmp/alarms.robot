@@ -4,6 +4,7 @@ Documentation       Hardware Video Appeartv Alarms
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -14,6 +15,7 @@ ${CMD}      ${CENTREON_PLUGINS}
 ...         --hostname=${HOSTNAME}
 ...         --snmp-port=${SNMPPORT}
 ...         --snmp-community=hardware/devices/video/appeartv/snmp/appeartv
+
 
 *** Test Cases ***
 AppearTV Alarms ${tc}

@@ -4,6 +4,7 @@ Documentation       Meraki VPN Tunnels
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Start Mockoon    ${MOCKOON_JSON}
+Suite Teardown      Stop Mockoon
 Test Timeout        120s
 
 
@@ -26,14 +27,13 @@ Create cache from API
     ...    OK: Cache files created successfully
     ...    Wrong output result:\n\n ${output}\nInstead of:\n OK: Cache files created successfully\n\n
     # Mockoon is not needed any longer since the data are cached
-    Stop Mockoon
 
 vpn-tunnels ${tc}
     [Tags]    meraki    api    vpn    network
     ${command}    Catenate
     ...    ${CMD}
     ...    --mode=vpn-tunnels --cache-use ${extra_options}
-    
+
     Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:    tc   extra_options                    expected_result   --

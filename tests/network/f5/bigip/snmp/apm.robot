@@ -1,13 +1,14 @@
 *** Settings ***
-
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
 *** Variables ***
-${CMD}                                          ${CENTREON_PLUGINS} --plugin=network::f5::bigip::snmp::plugin
+${CMD}      ${CENTREON_PLUGINS} --plugin=network::f5::bigip::snmp::plugin
+
 
 *** Test Cases ***
 apm ${tc}
@@ -21,7 +22,7 @@ apm ${tc}
     ...    --snmp-community=network/f5/bigip/snmp/slim-f5-bigip
     ...    ${extra_options}
 
-    Ctn Verify Command Output    ${command}    ${expected_result}
+    Ctn Verify Command Without Connector Output    ${command}    ${expected_result}
 
     Examples:        tc    extra_options                                                           expected_result    --
             ...      1     ${EMPTY}                                                                OK: sessions-created : Buffer creation, active sessions: 3724, pending sessions: 146 - All virtual servers are ok

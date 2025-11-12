@@ -9,26 +9,27 @@ Test Timeout        120s
 
 
 *** Variables ***
-${MOCKOON_JSON}    ${CURDIR}${/}restapi.json
+${MOCKOON_JSON}     ${CURDIR}${/}restapi.json
 
-${cmd}              ${CENTREON_PLUGINS} 
+${cmd}              ${CENTREON_PLUGINS}
 ...                 --plugin=apps::backup::veeam::vbem::restapi::plugin
 ...                 --mode=list-jobs
 ...                 --hostname=${HOSTNAME}
-...                 --api-username='username' 
-...                 --api-password='password' 
+...                 --api-username='username'
+...                 --api-password='password'
 ...                 --proto='http'
 ...                 --port=${APIPORT}
 
+
 *** Test Cases ***
 list-jobs ${tc}
-    [Tags]    apps    backup   veeam    vbem    restapi    list-jobs
-    
+    [Tags]    apps    backup    veeam    vbem    restapi    list-jobs
+
     ${command}    Catenate
     ...    ${cmd}
     ...    ${extraoptions}
-    
-    Ctn Verify Command Output    ${command}    ${expected_result}
+
+    Ctn Verify Command Without Connector Output    ${command}    ${expected_result}
 
     Examples:    tc     extraoptions                      expected_result   --
         ...      1      --timeframe=''                    List jobs: [uid: urn:veeam:Job][jobName: Backup client 2 - Tous les jours][jobType: Backup] [uid: urn:veeam:Job:xxxxxxxx-yyyy-zzzz-1111-aaaaaaaaaaaa][jobName: PROD Job 1][jobType: Backup]

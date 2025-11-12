@@ -19,6 +19,7 @@ ${cmd}              ${CENTREON_PLUGINS}
 ...                 --port=${APIPORT}
 ...                 --proto=http
 
+
 *** Test Cases ***
 List-Pods ${tc}
     [Documentation]    Check list-pods results
@@ -28,7 +29,7 @@ List-Pods ${tc}
     ...    ${cmd}
     ...    ${extraoptions}
 
-    Ctn Run Command And Check Result As Regexp    ${command}    ${expected_result}
+    Ctn Run Command Without Connector And Check Result As Regexp    ${command}    ${expected_result}
 
     Examples:    tc    extraoptions              expected_result   --
         ...      1     ${EMPTY}                  ^Pods: (\\\\n\\\\[.*\\\\]){2}\\\\Z

@@ -4,6 +4,7 @@ Documentation       Hardware lenovo xcc SNMP checks
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -13,6 +14,7 @@ ${CMD}      ${CENTREON_PLUGINS}
 ...         --mode=hardware
 ...         --hostname=${HOSTNAME}
 ...         --snmp-port=${SNMPPORT}
+
 
 *** Test Cases ***
 lenovo xcc hardware Alarms ${tc}

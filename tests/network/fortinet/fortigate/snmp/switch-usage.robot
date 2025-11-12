@@ -1,13 +1,14 @@
 *** Settings ***
-
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
 *** Variables ***
-${CMD}                                          ${CENTREON_PLUGINS} --plugin=network::fortinet::fortigate::snmp::plugin
+${CMD}      ${CENTREON_PLUGINS} --plugin=network::fortinet::fortigate::snmp::plugin
+
 
 *** Test Cases ***
 switch-usage ${tc}
@@ -20,7 +21,7 @@ switch-usage ${tc}
     ...    --snmp-port=${SNMPPORT}
     ...    --snmp-community=network/fortinet/fortigate/snmp/slim_fortigate-switches
     ...    ${extra_options}
- 
+
     Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:        tc    extra_options                                          expected_result    --

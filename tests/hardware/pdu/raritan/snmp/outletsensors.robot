@@ -4,6 +4,7 @@ Documentation       Check outlet sensors
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
 Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -13,7 +14,7 @@ ${CMD}      ${CENTREON_PLUGINS} --plugin=hardware::pdu::raritan::snmp::plugin
 
 *** Test Cases ***
 outlet ${tc}
-    [Tags]    hardware    pdu    raritan   outlet   sensors
+    [Tags]    hardware    pdu    raritan    outlet    sensors
     ${command}    Catenate
     ...    ${CMD}
     ...    --mode=outlet-sensors
@@ -23,7 +24,7 @@ outlet ${tc}
     ...    --snmp-community=hardware/pdu/raritan/snmp/raritan
     ...    --snmp-timeout=1
     ...    ${extra_options}
- 
+
     Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:        tc    extra_options                                                                expected_result    --

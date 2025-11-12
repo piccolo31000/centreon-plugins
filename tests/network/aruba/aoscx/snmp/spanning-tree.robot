@@ -3,11 +3,14 @@ Documentation       Check port Spanning Tree Protocol current state (BRIDGE-MIB)
 
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
-Test Setup          Ctn Generic Suite Setup
+
 
 *** Variables ***
 ${CMD}      ${CENTREON_PLUGINS} --plugin=network::aruba::aoscx::snmp::plugin
+
 
 *** Test Cases ***
 spanning-tree ${tc}
@@ -21,7 +24,7 @@ spanning-tree ${tc}
     ...    --snmp-community=network/aruba/aoscx/snmp/slim_aoscx-spanning-tree
     ...    --snmp-timeout=1
     ...    ${extra_options}
- 
+
     Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:        tc    extra_options                                                                                           expected_result    --

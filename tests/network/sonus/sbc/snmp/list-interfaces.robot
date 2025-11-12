@@ -1,7 +1,8 @@
 *** Settings ***
-
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -21,8 +22,8 @@ list-interfaces ${tc}
     ...    --snmp-community=network/sonus/sbc/snmp/slim_sonus-sbc
     ...    --snmp-timeout=1
     ...    ${extra_options}
- 
-    Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
+
+    Ctn Run Command Without Connector And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:        tc     extra_options                                                                 expected_result    --
             ...      1      ${EMPTY} --name --interface='Anonymized 049'                                  List interfaces: 'Anonymized 049' [speed = ][status = up][id = 1078199296][type = voiceFXS] 'Anonymized 049' [speed = ][status = up][id = 1079510016][type = voiceFXS]

@@ -3,6 +3,8 @@ Documentation       Checks Eclipse Mosquitto MQTT plugin uptime mode
 
 Resource            ${CURDIR}${/}..${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -32,7 +34,7 @@ Mosquitto MQTT uptime help
     ...    ${CMD}
     ...    --help
 
-    Ctn Run Command And Check Result As Regexp    ${command}    ^Plugin Description:
+    Ctn Run Command Without Connector And Check Result As Regexp    ${command}    ^Plugin Description:
 
 Mosquitto MQTT uptime ${tc}
     [Documentation]    Check Mosquitto MQTT uptime

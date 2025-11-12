@@ -27,6 +27,7 @@ use warnings;
 use centreon::plugins::misc;
 use Time::HiRes qw(time);
 use POSIX qw(floor);
+use Encode;
 
 sub new {
     my ($class, %options) = @_;
@@ -35,7 +36,7 @@ sub new {
 
     $options{options}->add_options(arguments => {
         'topic:s'            => { name => 'topic' },
-        'format-custom'      => { name => 'format_custom' },
+        'format-custom:s'    => { name => 'format_custom' },
 
         'warning-regexp:s'   => { name => 'warning_regexp' },
         'critical-regexp:s'  => { name => 'critical_regexp' },
@@ -116,8 +117,12 @@ sub check_options {
 sub manage_selection {
     my ($self, %options) = @_;
 
+    my $topic = $self->{option_results}->{topic};
+    eval {
+        $topic = decode("utf8", $topic);
+    };
     my $value = $options{mqtt}->query(
-        topic => $self->{option_results}->{topic}
+        topic => $topic
     );
 
     if (!centreon::plugins::misc::is_empty($self->{option_results}->{format_custom})) {

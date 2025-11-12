@@ -3,8 +3,10 @@ Documentation       Check interfaces.
 
 Resource            ${CURDIR}${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
-Test Setup          Ctn Generic Suite Setup
+
 
 *** Variables ***
 ${CMD}      ${CENTREON_PLUGINS} --plugin=network::cyberoam::snmp::plugin
@@ -22,11 +24,11 @@ interfaces ${tc}
     ...    --snmp-community=network/cyberoam/snmp/slim_sophos
     ...    --snmp-timeout=1
     ...    ${extra_options}
- 
+
     # first run to build cache
     Run    ${command}
     # second run to control the output
-    Ctn Verify Command Output    ${command}    ${expected_result}
+    Ctn Verify Command Without Connector Output    ${command}    ${expected_result}
 
     Examples:        tc    extra_options                                                                                                                                                                                                            expected_result    --
             ...      1     ${EMPTY}                                                                                                                                                                                                                 CRITICAL: Interface 'Anonymized 232' Status : down (admin: up) - Interface 'Anonymized 191' Status : down (admin: up) - Interface 'Anonymized 141' Status : down (admin: up)

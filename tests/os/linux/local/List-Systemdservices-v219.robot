@@ -3,6 +3,8 @@ Documentation       Linux Local list-systemdservices
 
 Resource            ${CURDIR}${/}..${/}..${/}..${/}resources/import.resource
 
+Suite Setup         Ctn Generic Suite Setup
+Suite Teardown      Ctn Generic Suite Teardown
 Test Timeout        120s
 
 
@@ -22,7 +24,7 @@ List-Systemdservices v219 ${tc}
     ...    --filter-name='${filtername}'
     ...    --filter-description='${filterdescription}'
 
-    Ctn Run Command And Check Result As Strings    ${command}    ${expected_result}
+    Ctn Run Command Without Connector And Check Result As Strings    ${command}    ${expected_result}
 
     Examples:        tc    filtername                filterdescription            expected_result    --
             ...      1     toto                      ${EMPTY}                      List systemd services:
